@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: my-database
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  spring-boot-app:
+    image: openjdk:22-ea-21-slim-bullseye
+    command: sh -c "mkdir -p /app && cp ./target/demo-0.0.1-SNAPSHOT.jar /app && cd /app && java -jar demo-0.0.1-SNAPSHOT.jar"
+    ports:
+        - "8080:8080"
+    volumes:
+        - ./target/demo-0.0.1-SNAPSHOT.jar:/target/demo-0.0.1-SNAPSHOT.jar
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+
+volumes:
+  mysql_data:
+
+
