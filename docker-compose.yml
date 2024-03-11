@@ -12,12 +12,15 @@ services:
       - mysql_data:/var/lib/mysql
 
   spring-boot-app:
-    image: openjdk:22-ea-21-slim-bullseye
-    command: sh -c "mkdir -p /app && cp ./target/demo-0.0.1-SNAPSHOT.jar /app && cd /app && java -jar demo-0.0.1-SNAPSHOT.jar"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh ./docker-entrypoint.sh
+    restart: always
     ports:
         - "8080:8080"
     volumes:
-        - ./target/demo-0.0.1-SNAPSHOT.jar:/target/demo-0.0.1-SNAPSHOT.jar
+      - ./src:/app/src
     depends_on:
       - mysql
     environment:
